@@ -1,5 +1,6 @@
 import setuptools
 from setuptools import setup
+import os
 
 install_deps = ['numpy>=1.20.0', 'scipy', 'natsort',
                 'tifffile', 'tqdm', 
@@ -68,7 +69,16 @@ except:
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
-    
+
+
+version = None
+with open(os.path.join('cellpose', '_version.py'), 'r') as fid:
+    for line in (line.strip() for line in fid):
+        if line.startswith('__version__'):
+            version = line.split('=')[1].strip().strip('\'')
+            break
+if version is None:
+    raise RuntimeError('Could not determine version')
     
 setup(
     name="cellpose",
@@ -84,7 +94,7 @@ setup(
       'setuptools_scm',
     ],
     packages=setuptools.find_packages(),
-    use_scm_version=True,
+    # use_scm_version=True,
     install_requires = install_deps,
     tests_require=[
       'pytest'
