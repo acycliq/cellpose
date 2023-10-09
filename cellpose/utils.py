@@ -14,6 +14,7 @@ import numpy as np
 import colorsys
 import io
 from multiprocessing import Pool, cpu_count
+from scipy.sparse import coo_matrix
 
 from . import metrics
 
@@ -412,6 +413,66 @@ def stitch3D(masks, stitch_threshold=0.25):
             empty = 1
             
     return masks
+
+
+
+def _keep_max(coo):
+    """
+    This is the same as:
+        iou[iou < iou.max(axis=0)] = 0.0
+    where iou is the dense array of coo
+    """
+    nCols = coo.shape[1]
+    data = []
+    row = []
+    col = []
+    for j in range(nCols):
+        values = coo.getcol(j).toarray().flatten()
+        i = np.argmax(values)
+        row.append(i)
+        col.append(j)
+        data.append(values[i])
+
+    return coo_matrix((data, (row, col)), shape=coo.shape)
+
+def stitch3D_coo(masks, stitch_threshold=0.25):
+    """ stitch 2D masks into 3D volume with stitch_threshold on IOU """
+    mmax = masks[0].max()
+    for i in range(len(masks)-1):
+        # logger.info('stitching mask %d ' % i)
+        iou_coo = metrics._intersection_over_union_coo(masks[i+1], masks[i])
+        # iou = iou_coo.toarray()[1:, 1:]
+
+        # remove now first column and first row from the coo matrix
+        is_coord_zero = iou_coo.row * iou_coo.col
+        row = iou_coo.row[is_coord_zero != 0] - 1
+        col = iou_coo.col[is_coord_zero != 0] - 1
+        data = iou_coo.data[is_coord_zero != 0]
+        m,n = iou_coo.shape
+        iou_coo = coo_matrix((data, (row, col)), shape=(m-1, n-1))
+        if iou_coo.data.size > 0:
+            # remove elements smaller than the threshold
+            idx = iou_coo.data >= stitch_threshold
+            iou_coo.data = iou_coo.data[idx]
+            iou_coo.col = iou_coo.col[idx]
+            iou_coo.row = iou_coo.row[idx]
+
+            iou_coo = _keep_max(iou_coo)
+            # iou[iou < iou.max(axis=0)] = 0.0
+
+            istitch = iou_coo.argmax(axis=1) + 1
+            istitch = np.asarray(istitch).flatten()
+            max_axis1 = iou_coo.max(axis=1)
+            max_axis1_arr = max_axis1.toarray()
+            ino = np.nonzero(max_axis1_arr == 0.0)[0]
+            # ino_2 = np.nonzero(iou_coo.max(axis=1)==0.0)[0]
+            # assert np.all(ino==ino_2)
+            istitch[ino] = np.arange(mmax+1, mmax+len(ino)+1, 1, int)
+            mmax += len(ino)
+            istitch = np.append(np.array(0), istitch)
+            masks[i+1] = istitch[masks[i+1]]
+    return masks.astype(np.uint32)
+
 
 def diameters(masks):
     _, counts = np.unique(np.int32(masks), return_counts=True)

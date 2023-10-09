@@ -6,6 +6,7 @@ from . import utils, dynamics
 from numba import jit
 from scipy.optimize import linear_sum_assignment
 from scipy.ndimage import convolve, mean
+from scipy.sparse import coo_matrix
 
 
 def mask_ious(masks_true, masks_pred):
@@ -168,6 +169,37 @@ def _label_overlap(x, y):
         overlap[x[i],y[i]] += 1
     return overlap
 
+
+def _label_overlap_coo(x, y):
+    """ fast function to get pixel overlaps between masks in x and y
+
+    Parameters
+    ------------
+
+    x: ND-array, int
+        where 0=NO masks; 1,2... are mask labels
+    y: ND-array, int
+        where 0=NO masks; 1,2... are mask labels
+
+    Returns
+    ------------
+
+    overlap: ND-array, int
+        matrix of pixel overlaps of size [x.max()+1, y.max()+1]
+
+    """
+    x = x.ravel()
+    y = y.ravel()
+    data = np.ones(len(x))
+    n_rows = 1 + x.max().astype(np.int32)
+    n_cols = 1 + y.max().astype(np.int32)
+    overlap = coo_matrix((data, (x, y)), shape=(n_rows, n_cols), dtype=np.uint)
+    # overlap = coo_matrix((1 + x.max().astype(np.int32), 1 + y.max().astype(np.int32)), dtype=np.int32 )
+    # overlap.data[x, y] += 1
+    overlap = overlap.tocsc().tocoo()
+    return overlap
+
+
 def _intersection_over_union(masks_true, masks_pred):
     """ intersection over union of all mask pairs
     
@@ -208,6 +240,42 @@ def _intersection_over_union(masks_true, masks_pred):
     iou = overlap / (n_pixels_pred + n_pixels_true - overlap)
     iou[np.isnan(iou)] = 0.0
     return iou
+
+
+def _intersection_over_union_coo(masks_true, masks_pred):
+    """ intersection over union of all mask pairs
+
+    Parameters
+    ------------
+
+    masks_true: ND-array, int
+        ground truth masks, where 0=NO masks; 1,2... are mask labels
+    masks_pred: ND-array, int
+        predicted masks, where 0=NO masks; 1,2... are mask labels
+
+    Returns
+    ------------
+
+    iou: ND-array, float
+        matrix of IOU pairs of size [x.max()+1, y.max()+1]
+
+    """
+    overlap = _label_overlap_coo(masks_true, masks_pred)
+
+    # print('x.max is %d' % masks_true.max())
+    # print('y.max is %d' % masks_pred.max())
+    n_pixels_pred = overlap.sum(axis=0)
+    n_pixels_true = overlap.sum(axis=1)
+
+    x = np.array((n_pixels_true)).flatten()
+    y = np.array((n_pixels_pred)).flatten()
+
+    pred_plus_true = x[overlap.row] + y[overlap.col]
+    iou_data = overlap.data /(pred_plus_true - overlap.data)
+    iou = coo_matrix((iou_data, (overlap.row, overlap.col)), shape=overlap.shape)
+
+    return iou
+
 
 def _true_positive(iou, th):
     """ true positive at threshold th
