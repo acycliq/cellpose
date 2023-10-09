@@ -385,7 +385,7 @@ def get_masks_unet(output, cell_threshold=0, boundary_threshold=0):
     masks = np.reshape(masks, shape0)
     return masks
 
-def stitch3D(masks, stitch_threshold=0.25):
+def stitch3D_official(masks, stitch_threshold=0.25):
     """ stitch 2D masks into 3D volume with stitch_threshold on IOU """
     mmax = masks[0].max()
     empty = 0
@@ -435,8 +435,9 @@ def _keep_max(coo):
 
     return coo_matrix((data, (row, col)), shape=coo.shape)
 
-def stitch3D_coo(masks, stitch_threshold=0.25):
+def stitch3D(masks, stitch_threshold=0.25):
     """ stitch 2D masks into 3D volume with stitch_threshold on IOU """
+    """ (DN: edited code from the official release) """
     mmax = masks[0].max()
     for i in range(len(masks)-1):
         # logger.info('stitching mask %d ' % i)
