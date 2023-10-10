@@ -436,8 +436,9 @@ def _keep_max(coo):
     return coo_matrix((data, (row, col)), shape=coo.shape)
 
 def stitch3D(masks, stitch_threshold=0.25):
-    """ stitch 2D masks into 3D volume with stitch_threshold on IOU """
-    """ (DN: edited code from the official release) """
+    """ stitch 2D masks into 3D volume with stitch_threshold on IOU
+        (DN: edited code from the official release)
+    """
     mmax = masks[0].max()
     for i in range(len(masks)-1):
         # logger.info('stitching mask %d ' % i)
