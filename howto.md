@@ -23,9 +23,9 @@ You **DO NOT** have to download/install CUDA etc from nvidia and go through all 
     >>> exit()
 ```
 
-* Download or clone now the repo to a folder of your choice: `git clone https://github.com/acycliq/cellpose.git` and cd into it.
-* To install cellpose run the command: `pip install -e ".[gui]"` from inside the folder cloned the repo into. Then run the commands 
-below to verify you are running version `0.0.0` and the cellpose runs on the gpu:
+* Install cellpose: `pip install https://github.com/acycliq/cellpose/raw/main/dist/cellpose-0.0.0-py3-none-any.whl` 
+
+    Run the commands below to verify you are running version `0.0.0` and that it runs on the gpu:
 
 ```
     (cellpose) dimitris@egon:~/dev/python/cellpose$ python
@@ -47,7 +47,7 @@ below to verify you are running version `0.0.0` and the cellpose runs on the gpu
 
 
 #### NOTES
-I wouldnt rempve the official release of cellpose straight away. I would keep both on my system and run 2 or 3 basic examples on both. 
+I wouldnt remove the official release of cellpose straight away. I would keep both on my system (in different envs) and run 2 or 3 basic examples on both. 
 They should yield the same results.  
 
 I would also keep using the official release until it starts becoming too slow or problematic to work with.
