@@ -44,7 +44,7 @@ You **DO NOT** have to download/install CUDA etc from nvidia and go through all 
     >>> 
     >>> exit()
 ```
-
+You can now use the software in exactly the same manner as the official release.
 
 #### NOTES
 I wouldnt remove the official release of cellpose straight away. I would keep both on my system (in different envs) and run 2 or 3 basic examples on both. 
