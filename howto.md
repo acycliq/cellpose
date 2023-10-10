@@ -8,7 +8,7 @@
     You **DO NOT** have to download/install CUDA etc from nvidia and go through all these painful steps manually. Pytorch comes 
 with cuda binaries already baked-in, you only have to run the command above. Once you do that, verify that pytorch (on the gpu) works fine:
 
-
+```
     (cellpose) dimitris@egon:~$ python
     Python 3.8.18 (default, Sep 11 2023, 13:40:15) 
     [GCC 11.2.0] :: Anaconda, Inc. on linux
@@ -20,12 +20,13 @@ with cuda binaries already baked-in, you only have to run the command above. Onc
     >>> torch.cuda.is_available()  
     True
     >>> exit()
+```
 
 * Download or clone now the repo to a folder of your choice: `git clone https://github.com/acycliq/cellpose.git` and cd into it.
 * To install cellpose run the command: `pip install -e ".[gui]"` from inside the folder cloned the repo into. Then run the commands 
 below to verify you are running version `0.0.0` and the cellpose runs on the gpu:
 
-
+```
     (cellpose) dimitris@egon:~/dev/python/cellpose$ python
     Python 3.8.18 (default, Sep 11 2023, 13:40:15) 
     [GCC 11.2.0] :: Anaconda, Inc. on linux
@@ -41,7 +42,7 @@ below to verify you are running version `0.0.0` and the cellpose runs on the gpu
     >>> 
     >>> 
     >>> exit()
-
+```
 
 
 #### NOTES
