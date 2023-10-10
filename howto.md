@@ -2,11 +2,11 @@
 
 * Create as usual a new `env`, I will name it cellpose but it can be anything :
   * `conda create --name cellpose python=3.8`
-* Activate the new `env`: `(base) dimitris@egon:~$ conda activate cellpose` and the install pytorch:
-* `conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia' `
+* Activate the new `env`: `conda activate cellpose` and the install pytorch:
+  `conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia' `
 
-    You **DO NOT** have to download/install CUDA etc from nvidia and go through all these painful steps manually. Pytorch comes 
-with cuda binaries already baked-in, you only have to run the command above. Once you do that, verify that pytorch (on the gpu) works fine:
+      You **DO NOT** have to download/install CUDA etc from nvidia and go through all these painful steps manually. Pytorch comes 
+  with cuda binaries already baked-in, you only have to run the command above. Once you do that, verify that pytorch (on the gpu) works fine:
 
 ```
     (cellpose) dimitris@egon:~$ python
