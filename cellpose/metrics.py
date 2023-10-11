@@ -191,12 +191,12 @@ def _label_overlap_coo(x, y):
     x = x.ravel()
     y = y.ravel()
     data = np.ones(len(x))
-    n_rows = 1 + x.max().astype(np.int32)
-    n_cols = 1 + y.max().astype(np.int32)
+    n_rows = 1 + x.max().astype(np.uint)
+    n_cols = 1 + y.max().astype(np.uint)
     overlap = coo_matrix((data, (x, y)), shape=(n_rows, n_cols), dtype=np.uint)
     # overlap = coo_matrix((1 + x.max().astype(np.int32), 1 + y.max().astype(np.int32)), dtype=np.int32 )
     # overlap.data[x, y] += 1
-    overlap = overlap.tocsc().tocoo()
+    overlap = overlap.tocsc().tocoo()  # I dont remember why I did that, there must be a reason!
     return overlap
 
 
