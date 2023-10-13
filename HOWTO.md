@@ -4,7 +4,7 @@
   * `conda create --name cellpose python=3.8`
 * Activate the new `env`: `conda activate cellpose` and then install pytorch:
   
-  `conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia' `
+  `conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia `
 
 You **DO NOT** have to download/install CUDA etc from nvidia and go through all these painful steps manually. Pytorch comes 
     with cuda binaries already baked-in, you only have to run the command above. Once you do that, verify that pytorch (on the gpu) works fine:
@@ -47,10 +47,12 @@ You **DO NOT** have to download/install CUDA etc from nvidia and go through all 
 You can now use the software in exactly the same manner as the official release.
 
 #### NOTES
-I wouldnt remove the official release of cellpose straight away. I would keep both on my system (in different envs) and run 2 or 3 basic examples on both. 
+I wouldnt remove the official release of cellpose straight away. I would keep both on my system (in different envs) and run 2 or 3 examples on both. 
 They should yield the same results.  
 
 I would also keep using the official release until it starts becoming too slow or problematic to work with.
 If these problems are memory-related and happen during the stitching, then switching to the code you just installed following the instructions 
 above might prove helpful to you.
+
+The enhancement implemented here does not require the gpu, but makes more sense to set up cellpose on the gpu anyway.
 
