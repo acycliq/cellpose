@@ -191,8 +191,8 @@ def _label_overlap_coo(x, y):
     x = x.ravel()
     y = y.ravel()
     data = np.ones(len(x))
-    n_rows = 1 + x.max().astype(np.uint)
-    n_cols = 1 + y.max().astype(np.uint)
+    n_rows = int(1 + x.max())
+    n_cols = int(1 + y.max())
     overlap = coo_matrix((data, (x, y)), shape=(n_rows, n_cols), dtype=np.uint)
     # overlap = coo_matrix((1 + x.max().astype(np.int32), 1 + y.max().astype(np.int32)), dtype=np.int32 )
     # overlap.data[x, y] += 1
