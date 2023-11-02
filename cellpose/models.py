@@ -665,7 +665,18 @@ class CellposeModel(UnetModel):
                 
                 if stitch_threshold > 0 and nimg > 1:
                     models_logger.info(f'stitching {nimg} planes using stitch_threshold={stitch_threshold:0.3f} to make 3D masks')
+
+                    out_dir = os.path.join(tempfile.gettempdir(), 'cellpose')
+                    Path(out_dir).mkdir(parents=True, exist_ok=True)
+                    fname = os.path.join(out_dir, "pre_stitched_masks.npy")
+                    np.save(fname, masks)
+                    models_logger.info('pre_stitched_masks saved to %s' % fname)
+
                     masks = utils.stitch3D(masks, stitch_threshold=stitch_threshold)
+                    fname = os.path.join(out_dir, "stitched_masks.npy")
+                    np.save(fname, masks)
+                    models_logger.info('stitched_masks saved to %s' % fname)
+
                     masks = utils.fill_holes_and_remove_small_masks(masks, min_size=min_size)
             
             flow_time = time.time() - tic
