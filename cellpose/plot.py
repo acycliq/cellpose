@@ -41,11 +41,18 @@ def dx_to_circ(dP,transparency=False,mask=None):
     
     dP = np.array(dP)
     mag = np.clip(transforms.normalize99(np.sqrt(np.sum(dP**2,axis=0))), 0, 1.)
+    mag = (np.clip(mag, 0, 1) * 255).astype(np.uint8)
+
     angles = np.arctan2(dP[1], dP[0])+np.pi
     a = 2
     r = ((np.cos(angles)+1)/a)
+    r = (np.clip(r, 0, 1) * 255).astype(np.uint8)
+
     g = ((np.cos(angles+2*np.pi/3)+1)/a)
+    g = (np.clip(g, 0, 1) * 255).astype(np.uint8)
+
     b =((np.cos(angles+4*np.pi/3)+1)/a)
+    b = (np.clip(b, 0, 1) * 255).astype(np.uint8)
     
     if transparency:
         im = np.stack((r,g,b,mag),axis=-1)
@@ -55,7 +62,7 @@ def dx_to_circ(dP,transparency=False,mask=None):
     if mask is not None and transparency and dP.shape[0]<3:
         im[:,:,-1] *= mask
         
-    im = (np.clip(im, 0, 1) * 255).astype(np.uint8)
+    # im = (np.clip(im, 0, 1) * 255).astype(np.uint8)
     return im
 
 def show_segmentation(fig, img, maski, flowi, channels=[0,0], file_name=None):
