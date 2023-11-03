@@ -196,7 +196,9 @@ def _label_overlap_coo(x, y):
     overlap = coo_matrix((data, (x, y)), shape=(n_rows, n_cols), dtype=np.uint)
     # overlap = coo_matrix((1 + x.max().astype(np.int32), 1 + y.max().astype(np.int32)), dtype=np.int32 )
     # overlap.data[x, y] += 1
-    overlap = overlap.tocsc().tocoo()  # I dont remember why I did that, there must be a reason!
+    overlap = overlap.tocsc().tocoo()   # I dont remember why I did that, there must be a reason!
+                                        # Ah yes! I think convering to csc if two points have the same coord then
+                                        # in the csc the corresponding value will be the sum
     return overlap
 
 
