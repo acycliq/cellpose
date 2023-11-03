@@ -652,7 +652,9 @@ class CellposeModel(UnetModel):
             else:
                 masks, p = [], []
                 resize = [shape[1], shape[2]] if not resample else None
+                models_logger.info("calling: %s" % "dynamics.compute_masks()" )
                 for i in iterator:
+                    models_logger.info(i)
                     outputs = dynamics.compute_masks(dP[:,i], cellprob[i], niter=niter, cellprob_threshold=cellprob_threshold,
                                                          flow_threshold=flow_threshold, interp=interp, resize=resize, 
                                                          min_size=min_size if stitch_threshold==0 or nimg==1 else -1, # turn off for 3D stitching

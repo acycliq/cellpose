@@ -82,6 +82,7 @@ if version is None:
     
 setup(
     name="cellpose",
+    version=version,
     license="BSD",
     author="Marius Pachitariu and Carsen Stringer",
     author_email="stringerc@janelia.hhmi.org",
