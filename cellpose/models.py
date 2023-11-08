@@ -6,6 +6,7 @@ import os, sys, time, shutil, tempfile, datetime, pathlib, subprocess
 from pathlib import Path
 import numpy as np
 from tqdm import trange, tqdm
+from scipy.sparse import coo_matrix
 from urllib.parse import urlparse
 import torch
 
@@ -572,7 +573,8 @@ class CellposeModel(UnetModel):
                                                           stitch_threshold=stitch_threshold,
                                                           )
             
-            flows = [plot.dx_to_circ(dP), dP, cellprob, p]
+            # flows = [plot.dx_to_circ(dP), dP, cellprob, p]
+            flows = None
             return masks, flows, styles
 
     def _run_cp(self, x, compute_masks=True, normalize=True, invert=False,
@@ -652,17 +654,22 @@ class CellposeModel(UnetModel):
             else:
                 masks, p = [], []
                 resize = [shape[1], shape[2]] if not resample else None
+                models_logger.info("calling: %s" % "dynamics.compute_masks()" )
                 for i in iterator:
+                    models_logger.info(i)
                     outputs = dynamics.compute_masks(dP[:,i], cellprob[i], niter=niter, cellprob_threshold=cellprob_threshold,
                                                          flow_threshold=flow_threshold, interp=interp, resize=resize, 
                                                          min_size=min_size if stitch_threshold==0 or nimg==1 else -1, # turn off for 3D stitching
                                                          use_gpu=self.gpu, device=self.device)
-                    masks.append(outputs[0])
-                    p.append(outputs[1])
+                    masks.append(coo_matrix(outputs[0]))
+                    # p.append([coo_matrix(d) for d in outputs[1]])
                     
-                masks = np.array(masks)
-                p = np.array(p)
-                
+                # masks = np.array(masks)
+                # p = np.array(p)
+
+                del outputs
+                del cellprob
+                del dP
                 if stitch_threshold > 0 and nimg > 1:
                     models_logger.info(f'stitching {nimg} planes using stitch_threshold={stitch_threshold:0.3f} to make 3D masks')
 
@@ -672,6 +679,7 @@ class CellposeModel(UnetModel):
                     np.save(fname, masks)
                     models_logger.info('pre_stitched_masks saved to %s' % fname)
 
+                    masks = np.stack([d.toarray() for d in masks])
                     masks = utils.stitch3D(masks, stitch_threshold=stitch_threshold)
                     fname = os.path.join(out_dir, "stitched_masks.npy")
                     np.save(fname, masks)
@@ -682,11 +690,13 @@ class CellposeModel(UnetModel):
             flow_time = time.time() - tic
             if nimg > 1:
                 models_logger.info('masks created in %2.2fs'%(flow_time))
-            masks, dP, cellprob, p = masks.squeeze(), dP.squeeze(), cellprob.squeeze(), p.squeeze()
+            # masks, dP, cellprob, p = masks.squeeze(), dP.squeeze(), cellprob.squeeze(), p.squeeze()
+            masks = masks.squeeze()
             
         else:
             masks, p = np.zeros(0), np.zeros(0)  #pass back zeros if not compute_masks
-        return masks, styles, dP, cellprob, p
+        # return masks, styles, dP, cellprob, p
+        return masks, np.zeros(0), np.zeros(0), np.zeros(0), np.zeros(0)
 
         
     def loss_fn(self, lbl, y):

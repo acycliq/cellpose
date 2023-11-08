@@ -473,7 +473,7 @@ def stitch3D(masks, stitch_threshold=0.25):
             mmax += len(ino)
             istitch = np.append(np.array(0), istitch)
             masks[i+1] = istitch[masks[i+1]]
-    return masks.astype(np.uint32)
+    return masks
 
 
 def diameters(masks):
