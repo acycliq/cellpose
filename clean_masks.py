@@ -86,7 +86,7 @@ def fill_holes_and_remove_small_masks_par(masks, min_size=15):
     slices = find_objects(masks)
     logger.info("Found %d slices" % len(slices))
 
-    slc = slices[25000:]
+    slc = slices[45000:]
     i = np.arange(len(slc))
     minsize = min_size * np.ones(len(slc))
     with Pool() as pool:
@@ -119,8 +119,7 @@ def helper(d):
     i = d[0]
     slc = d[1]
     min_size = d[2]
-    if i%500 == 0:
-        logger.info("Doing %d" % i)
+    logger.info("Doing %d" % i)
     if slc is not None:
         msk = masks[slc] == (i + 1)
         npix = msk.sum()
@@ -140,7 +139,7 @@ def helper(d):
 
 if __name__ == "__main__":
     logger.info('Hello')
-    masks = np.load("/home/dimitris/data/Mathieu/stitching_masks/stitched2.npy")
+    masks = np.load("/home/dimitris/data/Mathieu/stitching_masks/stitched_masks.npy")
     logger.info('start')
     out = fill_holes_and_remove_small_masks_par(masks)
     logger.info('end')
