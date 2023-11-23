@@ -541,8 +541,11 @@ def fill_holes_and_remove_small_masks(masks, min_size=15):
         raise ValueError('masks_to_outlines takes 2D or 3D array, not %dD array'%masks.ndim)
     
     slices = find_objects(masks)
+    print('%s: Found %d objects' % (str(np.datetime64('now')), len(slices)))
     j = 0
     for i,slc in enumerate(slices):
+        if i % 1000 == 0:
+            print('%s: Doing %d ' % (str(np.datetime64('now')), i))
         if slc is not None:
             msk = masks[slc] == (i+1)
             npix = msk.sum()
