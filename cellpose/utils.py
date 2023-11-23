@@ -15,6 +15,7 @@ import colorsys
 import io
 from multiprocessing import Pool, cpu_count
 from scipy.sparse import coo_matrix
+import fill_voids
 
 from . import metrics
 
@@ -550,7 +551,8 @@ def fill_holes_and_remove_small_masks(masks, min_size=15):
             elif npix > 0:   
                 if msk.ndim==3:
                     for k in range(msk.shape[0]):
-                        msk[k] = binary_fill_holes(msk[k])
+                        # msk[k] = binary_fill_holes(msk[k])
+                        msk[k] = fill_voids.fill(msk[k], in_place=False)
                 else:          
                     msk = binary_fill_holes(msk)
                 masks[slc][msk] = (j+1)
