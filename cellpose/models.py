@@ -679,7 +679,7 @@ class CellposeModel(UnetModel):
                     np.save(fname, masks)
                     models_logger.info('pre_stitched_masks saved to %s' % fname)
 
-                    masks = np.stack([d.toarray() for d in masks])
+                    masks = np.stack([d.toarray() for d in masks]).astype(np.uint32)
                     masks = utils.stitch3D(masks, stitch_threshold=stitch_threshold)
                     fname = os.path.join(out_dir, "stitched_masks.npy")
                     np.save(fname, masks)
